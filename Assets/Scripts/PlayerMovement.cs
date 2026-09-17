@@ -11,6 +11,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform leftFoot, rightFoot;
     [SerializeField] private LayerMask ground;
     [SerializeField] AudioClip jumpFx;
+
+    [SerializeField] private float dashLength;
+    [SerializeField] private InputActionReference dash;
+    bool hasDashed;
     bool canMove = true;
 
     
@@ -34,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
         jumpDust = GetComponentInChildren <ParticleSystem>();
 
         jump.action.started += Jump;
+        dash.action.started += Dash;
     }
 
    
@@ -78,6 +83,24 @@ public class PlayerMovement : MonoBehaviour
             jumpDust.Play();
             audio.PlayOneShot(jumpFx);
         }
+    }
+
+    private void Dash(InputAction.CallbackContext context)
+    {
+        if (!hasDashed)
+        {
+            if (moveDirection < 0f)
+
+            {
+                rgdbody.AddForce(new Vector2(-dashLength, 0));
+            }
+            if (moveDirection > 0f)
+            {
+                rgdbody.AddForce(new Vector2(dashLength, 0));
+            }
+
+        }
+
     }
 
     private bool CheckGrounded()
