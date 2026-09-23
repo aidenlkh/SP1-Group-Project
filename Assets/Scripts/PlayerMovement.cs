@@ -89,19 +89,24 @@ public class PlayerMovement : MonoBehaviour
     {
         if (!hasDashed)
         {
-            if (moveDirection < 0f)
+            if (rendr.flipX == true)
 
             {
                 rgdbody.AddForce(new Vector2(-dashLength, 0));
+                hasDashed = true;
             }
-            if (moveDirection > 0f)
+            if (rendr.flipX == false)
             {
                 rgdbody.AddForce(new Vector2(dashLength, 0));
+                hasDashed = true;
+
             }
+
 
         }
 
     }
+
 
     private bool CheckGrounded()
 
@@ -112,6 +117,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (lefthit.collider != null && lefthit || righthit.collider != null && righthit)
         {
+            hasDashed = false;
             return true;
         }
         else
