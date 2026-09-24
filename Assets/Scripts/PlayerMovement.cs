@@ -8,13 +8,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private InputActionReference jump;
     [SerializeField] private float speed = 1f;
     [SerializeField] private float jumpHeight = 150f;
-    [SerializeField] private Transform leftFoot, rightFoot;
+    [SerializeField] private Transform leftFoot, rightFoot, leftArm, rightArm;
     [SerializeField] private LayerMask ground;
     [SerializeField] AudioClip jumpFx;
 
     [SerializeField] private float dashLength;
     [SerializeField] private InputActionReference dash;
     bool hasDashed;
+    bool wallClimbing = false;
     bool canMove = true;
 
     
@@ -50,9 +51,9 @@ public class PlayerMovement : MonoBehaviour
         anim.SetBool("Grounded", CheckGrounded());
 
         if (moveDirection < 0f)
-
         {
             FlipSprite(true);
+
         }
         if (moveDirection > 0f)
         {
@@ -67,6 +68,17 @@ public class PlayerMovement : MonoBehaviour
         {
             return;
         }
+        if(CheckWall() == true)
+        {
+            rgdbody.gravityScale = 0;
+            rgdbody.linearVelocityY = 0;
+            
+        }
+        else
+        { 
+            rgdbody.gravityScale = 1;
+        }
+
         rgdbody.linearVelocity = new Vector2(moveDirection * speed * Time.deltaTime, rgdbody.linearVelocity.y);
     }
 
@@ -77,7 +89,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump(InputAction.CallbackContext context)
     {
-        if (CheckGrounded() == true)
+        if (CheckGrounded() == true || wallClimbing)
         { 
          rgdbody.AddForce(new Vector2(0, jumpHeight));
             jumpDust.Play();
@@ -125,6 +137,22 @@ public class PlayerMovement : MonoBehaviour
             return false;
         }
         
+    }
+    private bool CheckWall()
+    {
+        RaycastHit2D lefthit = Physics2D.Raycast(leftArm.position, Vector2.left, rayCastDistance, ground);
+        RaycastHit2D righthit = Physics2D.Raycast(rightArm.position, Vector2.right, rayCastDistance, ground);
+
+        if (lefthit.collider != null && lefthit || righthit.collider != null && righthit)
+        {
+            wallClimbing = true;
+            return true;
+        }
+        else
+        {
+            wallClimbing = false;
+            return false;
+        }
     }
     public void TakeKnockBack(float knockBackF, float upwardsF)
     {
