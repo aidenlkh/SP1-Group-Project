@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,39 +13,46 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private float dashLength;
     [SerializeField] private InputActionReference dash;
+    [SerializeField] private float wallBounceX = 200f;
+    [SerializeField] private float wallBounceY = 200f;
+    [SerializeField] private LayerMask wall;
+    [SerializeField] private float dashCooldown = 1f;
+    [SerializeField] private float wallBounceCooldown = 1f;
+    bool canDash = true;
+    bool canWallBounce = true;
     bool hasDashed;
-    bool wallClimbing = false;
+    bool wallOnLeft;
     bool canMove = true;
 
-    
-    private bool grounded; 
+
+    private bool grounded;
 
     private float moveDirection;
-    private ParticleSystem jumpDust; 
+    private ParticleSystem jumpDust;
 
     private Rigidbody2D rgdbody;
     private SpriteRenderer rendr;
     private Animator anim;
     private AudioSource audio;
-    [SerializeField] private float rayCastDistance = 0.25f; 
-   
+    [SerializeField] private float rayCastDistance = 0.25f;
+
     void Start()
     {
         rgdbody = GetComponent<Rigidbody2D>();
         rendr = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         audio = GetComponent<AudioSource>();
-        jumpDust = GetComponentInChildren <ParticleSystem>();
+        jumpDust = GetComponentInChildren<ParticleSystem>();
 
         jump.action.started += Jump;
         dash.action.started += Dash;
     }
 
-   
+
     void Update()
     {
         moveDirection = move.action.ReadValue<float>();
-        anim.SetFloat("MS",Mathf.Abs(rgdbody.linearVelocity.x));
+        anim.SetFloat("MS", Mathf.Abs(rgdbody.linearVelocity.x));
         anim.SetFloat("VertS", rgdbody.linearVelocity.y);
         anim.SetBool("Grounded", CheckGrounded());
 
@@ -64,19 +70,14 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
 
     {
-        if(!canMove) 
+        if (!canMove)
         {
             return;
         }
-        if(CheckWall() == true)
+        if (canWallBounce && CheckWall() == true && CheckGrounded() == false)
         {
-            rgdbody.gravityScale = 0;
-            rgdbody.linearVelocityY = 0;
-            
-        }
-        else
-        { 
-            rgdbody.gravityScale = 1;
+            WallBounce();
+            return;
         }
 
         rgdbody.linearVelocity = new Vector2(moveDirection * speed * Time.deltaTime, rgdbody.linearVelocity.y);
@@ -89,9 +90,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Jump(InputAction.CallbackContext context)
     {
-        if (CheckGrounded() == true || wallClimbing)
-        { 
-         rgdbody.AddForce(new Vector2(0, jumpHeight));
+        if (CheckGrounded() == true)
+        {
+            rgdbody.AddForce(new Vector2(0, jumpHeight));
             jumpDust.Play();
             audio.PlayOneShot(jumpFx);
         }
@@ -99,24 +100,23 @@ public class PlayerMovement : MonoBehaviour
 
     private void Dash(InputAction.CallbackContext context)
     {
-        if (!hasDashed)
+        if (!hasDashed && canDash)
         {
             if (rendr.flipX == true)
-
             {
                 rgdbody.AddForce(new Vector2(-dashLength, 0));
                 hasDashed = true;
+                anim.SetTrigger("Dash");
             }
             if (rendr.flipX == false)
             {
                 rgdbody.AddForce(new Vector2(dashLength, 0));
                 hasDashed = true;
-
+                anim.SetTrigger("Dash");
             }
-
-
+            canDash = false;
+            Invoke("ResetDash", dashCooldown);
         }
-
     }
 
 
@@ -125,7 +125,7 @@ public class PlayerMovement : MonoBehaviour
     {
         RaycastHit2D lefthit = Physics2D.Raycast(leftFoot.position, Vector2.down, rayCastDistance, ground);
         RaycastHit2D righthit = Physics2D.Raycast(rightFoot.position, Vector2.down, rayCastDistance, ground);
-       
+
 
         if (lefthit.collider != null && lefthit || righthit.collider != null && righthit)
         {
@@ -136,24 +136,43 @@ public class PlayerMovement : MonoBehaviour
         {
             return false;
         }
-        
+
     }
     private bool CheckWall()
     {
-        RaycastHit2D lefthit = Physics2D.Raycast(leftArm.position, Vector2.left, rayCastDistance, ground);
-        RaycastHit2D righthit = Physics2D.Raycast(rightArm.position, Vector2.right, rayCastDistance, ground);
+        RaycastHit2D lefthit = Physics2D.Raycast(leftArm.position, Vector2.left, rayCastDistance, wall);
+        RaycastHit2D righthit = Physics2D.Raycast(rightArm.position, Vector2.right, rayCastDistance, wall);
 
         if (lefthit.collider != null && lefthit || righthit.collider != null && righthit)
         {
-            wallClimbing = true;
+            wallOnLeft = lefthit.collider != null;
             return true;
         }
         else
         {
-            wallClimbing = false;
             return false;
         }
     }
+    private void WallBounce()
+    {
+        float direction;
+        if (wallOnLeft)
+        {
+            direction = 1f;
+        }
+        else
+        {
+            direction = -1f;
+        }
+
+        rgdbody.linearVelocity = Vector2.zero;
+        FlipSprite(direction < 0f);
+        TakeKnockBack(direction * wallBounceX, wallBounceY);
+        anim.SetTrigger("WalBounce");
+        canWallBounce = false;
+        Invoke("ResetWallBounce", wallBounceCooldown);
+    }
+
     public void TakeKnockBack(float knockBackF, float upwardsF)
     {
         canMove = false;
@@ -163,5 +182,14 @@ public class PlayerMovement : MonoBehaviour
     private void CanMoveAgain()
     {
         canMove = true;
+    }
+    private void ResetDash()
+    {
+        canDash = true;
+    }
+
+    private void ResetWallBounce()
+    {
+        canWallBounce = true;
     }
 }
