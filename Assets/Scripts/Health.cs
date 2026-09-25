@@ -68,6 +68,11 @@ public class Health : MonoBehaviour
        
         return true;
     }
+    public void Kill()
+    {
+        currentHealth = 0;
+        UpdateHpBar();
+    }
 
-  
+
 }
