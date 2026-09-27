@@ -11,16 +11,20 @@ public class Health : MonoBehaviour
     [SerializeField] Slider hpSlider;
     private int currentHealth;
     [SerializeField] Image fillImage;
+    [SerializeField] AudioClip hurtFx;
+    private AudioSource audioSource;
 
     void Start()
     {
         currentHealth = startingHealth;
         UpdateHpBar();
+        audioSource = GetComponent<AudioSource>();
     }
     public void TakeDamage(int dmg)
     {
         currentHealth -= 1;
         UpdateHpBar();
+        audioSource.PlayOneShot(hurtFx);
 
         if (currentHealth <= 0)
         {

@@ -10,6 +10,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform leftFoot, rightFoot, leftArm, rightArm;
     [SerializeField] private LayerMask ground;
     [SerializeField] AudioClip jumpFx;
+    [SerializeField] AudioClip dashFx;
+    [SerializeField] AudioClip wallBounceFx;
 
     [SerializeField] private float dashLength;
     [SerializeField] private InputActionReference dash;
@@ -114,6 +116,7 @@ public class PlayerMovement : MonoBehaviour
                 hasDashed = true;
                 anim.SetTrigger("Dash");
             }
+            audio.PlayOneShot(dashFx);
             canDash = false;
             Invoke("ResetDash", dashCooldown);
         }
@@ -169,6 +172,7 @@ public class PlayerMovement : MonoBehaviour
         FlipSprite(direction < 0f);
         TakeKnockBack(direction * wallBounceX, wallBounceY);
         anim.SetTrigger("WalBounce");
+        audio.PlayOneShot(wallBounceFx);
         canWallBounce = false;
         Invoke("ResetWallBounce", wallBounceCooldown);
     }

@@ -6,7 +6,7 @@ public class FallingCubesRespawn : MonoBehaviour
 
     void Start()
     {
-        InvokeRepeating("Spawn", 2f, 2f);
+        InvokeRepeating("Spawn", 3f, 3f);
     }
 
     void Spawn()
