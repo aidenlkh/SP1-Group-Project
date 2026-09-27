@@ -1009,6 +1009,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1088
   jumpFx: {fileID: 8300000, guid: 6f2630363ae843c43a767298d42132ca, type: 3}
+  dashFx: {fileID: 0}
+  wallBounceFx: {fileID: 0}
   dashLength: 1800
   dash: {fileID: 563491392657473316, guid: 581052cf705ec1c4ea3cda03df220598, type: 3}
   wallBounceX: 250
@@ -7053,7 +7055,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 124c72a8d16bab44a85b87aacf496db1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpikeFollow
-  speed: 0.5
+  speed: 0.7
   startDelay: 10
 --- !u!61 &1032685757
 BoxCollider2D:
