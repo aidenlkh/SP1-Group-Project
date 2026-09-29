@@ -9,6 +9,7 @@ public class QuestCheck : MonoBehaviour
     [SerializeField] AudioClip deckFx;
     [SerializeField] AudioClip deckFx2;
     [SerializeField] private int lvlindenx;
+    public GameObject loadingScreen;
     private AudioSource audio; 
     private void Awake()
     {
@@ -41,9 +42,16 @@ public class QuestCheck : MonoBehaviour
     }
 
     private void LoadNextLevel()
-{
+    {
+        loadingScreen.SetActive(true);
+        Invoke("LoadScene", 1.5f);
+        AudioListener.volume = 0f;
+    }
+
+    private void LoadScene()
+    {
         SceneManager.LoadScene(lvlindenx);
-}
+    }
     private void OnTriggerExit2D(Collider2D collision)
     {
         doneText.SetActive(false);

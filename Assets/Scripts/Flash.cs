@@ -12,7 +12,7 @@ public class Flash : MonoBehaviour
     public void FlashPlayer()
     {
         sr.color = Color.red;
-        Invoke("ResetColor", 0.5f);
+        Invoke("ResetColor", 1.5f);
     }
 
     void ResetColor()

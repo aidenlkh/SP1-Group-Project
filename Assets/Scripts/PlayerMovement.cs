@@ -45,7 +45,7 @@ public class PlayerMovement : MonoBehaviour
         anim = GetComponent<Animator>();
         audio = GetComponent<AudioSource>();
         jumpDust = GetComponentInChildren<ParticleSystem>();
-
+        AudioListener.volume = 1f;
         jump.action.started += Jump;
         dash.action.started += Dash;
     }
@@ -179,7 +179,9 @@ public class PlayerMovement : MonoBehaviour
 
     public void TakeKnockBack(float knockBackF, float upwardsF)
     {
+        if (!canMove) return;
         canMove = false;
+        rgdbody.linearVelocity = Vector2.zero;
         rgdbody.AddForce(new Vector2(knockBackF, upwardsF));
         Invoke("CanMoveAgain", 0.25f);
     }

@@ -9,7 +9,7 @@ public class Killzone : MonoBehaviour
         if (collision.gameObject.CompareTag("Player")) 
         {
             collision.transform.position = spawnPos.position;
-            collision.GetComponent<Health>().TakeDamage(1);
+            collision.GetComponent<Health>().TakeDamage(2);
             collision.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
 
         }

@@ -8,7 +8,7 @@ public class SpikeKillzone : MonoBehaviour
         if (collision.gameObject.CompareTag("Player"))
         {
             collision.GetComponent<Health>().Kill();
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            FindAnyObjectByType<GameOver>().ShowGameOver();
         }
     }
 }

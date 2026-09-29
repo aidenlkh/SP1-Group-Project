@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Health : MonoBehaviour
@@ -28,7 +29,15 @@ public class Health : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            Respawn();
+            GameOver gameOver = FindAnyObjectByType<GameOver>();
+            if (gameOver != null)
+            {
+                gameOver.ShowGameOver();
+            }
+            else
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
         }
     }
     private void Respawn()
