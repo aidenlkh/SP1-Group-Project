@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Health : MonoBehaviour
@@ -11,20 +12,32 @@ public class Health : MonoBehaviour
     [SerializeField] Slider hpSlider;
     private int currentHealth;
     [SerializeField] Image fillImage;
+    [SerializeField] AudioClip hurtFx;
+    private AudioSource audioSource;
 
     void Start()
     {
         currentHealth = startingHealth;
         UpdateHpBar();
+        audioSource = GetComponent<AudioSource>();
     }
     public void TakeDamage(int dmg)
     {
         currentHealth -= 1;
         UpdateHpBar();
+        audioSource.PlayOneShot(hurtFx);
 
         if (currentHealth <= 0)
         {
-            Respawn();
+            GameOver gameOver = FindAnyObjectByType<GameOver>();
+            if (gameOver != null)
+            {
+                gameOver.ShowGameOver();
+            }
+            else
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
         }
     }
     private void Respawn()
@@ -68,6 +81,11 @@ public class Health : MonoBehaviour
        
         return true;
     }
+    public void Kill()
+    {
+        currentHealth = 0;
+        UpdateHpBar();
+    }
 
-  
+
 }

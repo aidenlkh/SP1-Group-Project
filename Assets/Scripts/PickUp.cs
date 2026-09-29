@@ -9,7 +9,8 @@ public class PickUp : MonoBehaviour
         {
             collision.gameObject.GetComponent<PlayerQuest>().AddBalls();
             Instantiate(ballParticle, transform.position, Quaternion.identity);
+            Destroy(gameObject);
         }
-        Destroy(gameObject);
+        
     }
 }
